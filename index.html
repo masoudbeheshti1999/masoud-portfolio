@@ -434,13 +434,24 @@
   </main>
 
   <script>
-    // شمارش معکوس از ۸۷ روز
-    const target = new Date(Date.now() + 87 * 24 * 60 * 60 * 1000 + 1000);
+    // شمارش معکوس ۳۱ روز — ذخیره در localStorage تا با رفرش از بین نرود
+    const STORAGE_KEY = 'countdown_target_31d';
+    const DURATION = 31 * 24 * 60 * 60 * 1000; // ۳۱ روز
+
+    let target;
+    const saved = localStorage.getItem(STORAGE_KEY);
+
+    if (saved && !isNaN(parseInt(saved)) && parseInt(saved) > Date.now()) {
+      target = parseInt(saved);
+    } else {
+      target = Date.now() + DURATION;
+      localStorage.setItem(STORAGE_KEY, String(target));
+    }
 
     function pad(n) { return String(n).padStart(2, '0'); }
 
     function tick() {
-      const diff = Math.max(0, target - new Date());
+      const diff = Math.max(0, target - Date.now());
       const d = Math.floor(diff / 86400000);
       const h = Math.floor((diff % 86400000) / 3600000);
       const m = Math.floor((diff % 3600000) / 60000);
@@ -449,6 +460,11 @@
       document.getElementById('hours').textContent = pad(h);
       document.getElementById('minutes').textContent = pad(m);
       document.getElementById('seconds').textContent = pad(s);
+
+      // اگر تموم شد، شمارش نگه داشته می‌شود
+      if (diff === 0) {
+        // تایمر متوقف شده — صفر نمایش داده می‌شود
+      }
     }
 
     tick();
